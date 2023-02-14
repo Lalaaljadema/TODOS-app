@@ -7,19 +7,22 @@ sg.theme("LightBrown2")
 clock= sg.Text('',key='clock')
 label = sg.Text("Type in a todo: ")   # Create a label on the  window
 input_box = sg.InputText(tooltip = "Enter todo", key='todo')
-add_button = sg.Button("Add")
+add_button = sg.Button(size=20, image_source="add.png", mouseover_colors="LightBlue2",
+                       tooltip="add todo",key="Add")
 list_todos = sg.Listbox(values = functions.get_todos('todos.txt'), key = 'todos',
                      enable_events = True,size = [45,10])
 list_completed = sg.Listbox(values = functions.get_todos('completed_todos.txt'), key = 'c_todos',
                       enable_events = True, size = [45,10])
 edit_button = sg.Button("Edit")
 delete_button = sg.Button("Delete")
-completed_button = sg.Button("Completed")
+completed_button = sg.Button(size= 20, image_source="complete.png",mouseover_colors="LightBlue2",tooltip="completed",key="Completed")
+incomplete_button=sg.Button("Incomplete", key="incomplete")
 left_column_content = [[list_todos],[list_completed]]
-right_column_content = [[edit_button],[delete_button],[completed_button]]
+right_column_content = [[edit_button],[delete_button],[completed_button],[incomplete_button]]
 left_column = sg.Column(left_column_content)
 right_column = sg.Column(right_column_content)
 exit_button = sg.Button("Exit")
+
 
 window = sg.Window('My To-Do App',
                   layout = [[clock],[label, input_box, add_button],[left_column,right_column],
@@ -72,11 +75,20 @@ while True:
                 sg.popup(f'{todo_to_complete} is completed!', font=("Helvetica", 20))
             except IndexError:
                 sg.popup("Please select an item first", font=("Helvetica", 20))
-                case
+        case "incomplete":
+            todos_to_incomplete= values['c_todos'][0]
+            c_todos= functions.get_todos("completed_todos.txt")
+            index= c_todos.index(todos_to_incomplete)
+            incomplete_todos= c_todos.pop(index)
+            functions.write_todos('completed_todos.txt',c_todos)
+            todos=functions.get_todos("todos.txt")
+            todos.append(todos_to_incomplete)
+            functions.write_todos('todos.txt',todos)
+            window['todos'].update(values=todos)
+            window['c_todos'].update(values=c_todos)
         case "Exit":
             break
         case sg.WIN_CLOSED:
             break
-
 
 window.close()
